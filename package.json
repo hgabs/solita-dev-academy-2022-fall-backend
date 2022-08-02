@@ -1,0 +1,12 @@
+{
+  "name": "dev-academy-2022-fall-backend",
+  "version": "1.0.0",
+  "description": "Backend for Solita's Dev Academy 2022 Fall Exercise",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "hgs",
+  "license": "ISC"
+}
