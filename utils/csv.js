@@ -20,7 +20,6 @@ const journeyHeaders = ['departure', 'arrival', 'departure_station_id',
 
 const csvFilesPath = path.resolve(__dirname, '..', 'data');
 let stations = [], stationIds = [], journeyCount = 0;
-const startTime = new Date();
 let validatedJourneys = [];
 
 const readdir = util.promisify(fs.readdir);
@@ -70,7 +69,7 @@ const processValidatedRow = (row, stationIds, stations, validatedJourneys) => {
 const processCSVfile = (csvFile) => {
   return new Promise((resolve, reject) => {
     let invalidRows = [];
-    const endTime = new Date();
+    const startTime = new Date();
     fs.createReadStream(csvFilesPath + '/' + csvFile)
       .pipe(parse({ headers: false, skipRows: 1, separator: ',' }))
       .validate(csvRowValidator)
