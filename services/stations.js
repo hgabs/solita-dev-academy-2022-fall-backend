@@ -28,11 +28,11 @@ const getTopFiveDeparturesFromStation = async (id, date) => {
         statement = `
             SELECT
                 arrival_station_id AS station_id,
-                name AS station_name, 
+                name AS station_name,
                 COUNT(*)::int AS departure_count
             FROM journeys
             INNER JOIN stations AS s ON s.id = arrival_station_id
-            WHERE departure_station_id = $1 
+            WHERE departure_station_id = $1
             GROUP BY arrival_station_id, name
             ORDER BY departure_count DESC LIMIT 5;
         `;
@@ -41,11 +41,11 @@ const getTopFiveDeparturesFromStation = async (id, date) => {
         statement = `
             SELECT
                 arrival_station_id AS station_id,
-                name AS station_name, 
+                name AS station_name,
                 COUNT(*)::int AS departure_count
             FROM journeys
             INNER JOIN stations AS s ON s.id = arrival_station_id
-            WHERE 
+            WHERE
                 departure_station_id = $1
                 AND arrival BETWEEN
                     (date_trunc('month', $2::date))::timestamp
@@ -64,12 +64,12 @@ const getTopFiveArrivalsToStation = async (id, date) => {
     if (!date) {
         statement = `
             SELECT
-                departure_station_id AS station_id, 
+                departure_station_id AS station_id,
                 name AS station_name,
                 COUNT(*)::int AS arrival_count
             FROM journeys
             INNER JOIN stations AS s ON s.id = departure_station_id
-            WHERE arrival_station_id = $1 
+            WHERE arrival_station_id = $1
             GROUP BY departure_station_id, name
             ORDER BY arrival_count DESC LIMIT 5;
         `;
@@ -77,12 +77,12 @@ const getTopFiveArrivalsToStation = async (id, date) => {
     } else {
         statement = `
             SELECT
-                departure_station_id AS station_id, 
-                name AS station_name, 
+                departure_station_id AS station_id,
+                name AS station_name,
                 COUNT(*)::int AS arrival_count
             FROM journeys
             INNER JOIN stations AS s ON s.id = departure_station_id
-            WHERE arrival_station_id = $1 
+            WHERE arrival_station_id = $1
                 AND departure BETWEEN
                     (date_trunc('month', $2::date))::timestamp
                     AND (date_trunc('month', $2::date) + interval '1 month' - interval '1 day')::timestamp
@@ -92,7 +92,7 @@ const getTopFiveArrivalsToStation = async (id, date) => {
         result = await pool.query(statement, [id, date]);
     }
 
-    
+
     return result.rows;
 }
 

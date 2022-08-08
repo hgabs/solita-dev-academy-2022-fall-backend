@@ -7,7 +7,7 @@ journeyRouter.get('/journeys', async (req, res, next) => {
     try {
         const { keyword = '', limit = 5, offset = 0 } = req.query;
         const journeys = await journeyService.getAll(keyword, limit, offset);
-        return res.status(200).send(journeys);    
+        return res.status(200).send(journeys);
     } catch (error) {
         console.log(error);
         return res.status(500).end();
