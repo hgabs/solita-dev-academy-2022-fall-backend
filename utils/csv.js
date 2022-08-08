@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const util = require('util');
-const client = require('../db');
+const pool = require('../db');
 const format = require('pg-format');
 const { parse } = require('@fast-csv/parse');
 
@@ -58,12 +58,12 @@ const processValidatedRow = (row, stationIds, stations, validatedJourneys) => {
 
   journeyCount++;
   validatedJourneys.push({
-    'departure': DEPARTURE_TIME_KEY,
-    'arrival': ARRIVAL_TIME_KEY,
-    'departure_station_id': DEPARTURE_STATION_ID_KEY,
-    'arrival_station_id': ARRIVAL_STATION_KEY,
-    'distance': COVERED_DISTANCE_KEY,
-    'duration': DURATION_KEY
+    'departure': row[DEPARTURE_TIME_KEY],
+    'arrival': row[ARRIVAL_TIME_KEY],
+    'departure_station_id': row[DEPARTURE_STATION_ID_KEY],
+    'arrival_station_id': row[ARRIVAL_STATION_KEY],
+    'distance': row[COVERED_DISTANCE_KEY],
+    'duration': row[DURATION_KEY]
   });
 }
 
@@ -95,7 +95,7 @@ const saveToDB = async (relation, headers, data) => {
     const lastRow = i == data.length - 1;
     if (rowLimitReached || lastRow) {
       const statement = format('INSERT INTO %s (%s) VALUES %L', relation, headers, rows);
-      await client.query(statement);
+      await pool.query(statement);
       rows = [];
     }
     currentRow = [];
@@ -111,14 +111,13 @@ const saveToDB = async (relation, headers, data) => {
       return processCSVfile(file);
     }));
 
-    await client.connect();
     const startTime = new Date();
     console.log('[*] Saving data to databases...');
     await saveToDB('stations', stationHeaders, stations);
     await saveToDB('journeys', journeyHeaders, validatedJourneys);
     const endTime = new Date();
     console.log(`[+] Data successfully saved to database (${(endTime - startTime) / 1000} sec).`)
-    await client.end();
+    await pool.end();
     console.log(`[+] Total of ${stationIds.length} stations and ${journeyCount} valid journeys.`);
   } catch (error) {
     console.log(error);
