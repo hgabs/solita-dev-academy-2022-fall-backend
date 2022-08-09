@@ -1,9 +1,10 @@
 const pool = require('../db');
 
 
-const getAll = async (keyword, limit, offset) => {
+const getAll = async (keyword, limit, page) => {
     const statement = `
         SELECT
+            j.id AS id,
             des.id AS departure_station_id,
             des.name AS departure_station_name,
             j.departure AS departure_time,
@@ -15,9 +16,22 @@ const getAll = async (keyword, limit, offset) => {
         FROM journeys AS j
         INNER JOIN stations AS des ON des.id = j.departure_station_id
         INNER JOIN stations AS ars ON ars.id = j.arrival_station_id
+        ORDER BY j.id DESC
         LIMIT $1 OFFSET $2`;
-    const result = await pool.query(statement, [limit, offset]);
+    const result = await pool.query(statement, [limit, page]);
     return await result.rows;
+}
+
+const getCount = async (keyword) => {
+    let statement, params = [];
+    if (keyword) {
+        statement = "SELECT COUNT(*)::int FROM journeys WHERE name ILIKE '%' || $1 || '%'";
+        params = [keyword];
+    } else {
+        statement = 'SELECT COUNT(*)::int FROM journeys';
+    }
+    const result = await pool.query(statement, params);
+    return result.rows[0].count;
 }
 
 const getById = async (id) => {
@@ -43,5 +57,6 @@ const getById = async (id) => {
 
 module.exports = {
     getAll,
+    getCount,
     getById
 };

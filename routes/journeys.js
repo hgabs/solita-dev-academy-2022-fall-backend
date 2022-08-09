@@ -1,13 +1,13 @@
 const express = require('express');
 const journeyRouter = express.Router();
 const journeyService = require('../services/journeys.js');
+const paginate = require('../middlewares/paginate');
 
 
-journeyRouter.get('/journeys', async (req, res, next) => {
+journeyRouter.get('/journeys', paginate('journey'), async (req, res, next) => {
     try {
-        const { keyword = '', limit = 5, offset = 0 } = req.query;
-        const journeys = await journeyService.getAll(keyword, limit, offset);
-        return res.status(200).send(journeys);
+        const { keyword = '', limit = 5, page = 1 } = req.query;
+        return res.status(200).json(req.paginatedResults);
     } catch (error) {
         console.log(error);
         return res.status(500).end();
