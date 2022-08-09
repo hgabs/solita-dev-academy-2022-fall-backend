@@ -1,10 +1,29 @@
 const pool = require('../db');
 
 
-const getAll = async (limit = 5, offset = 0) => {
-    const statement = 'SELECT * FROM stations LIMIT $1 OFFSET $2';
-    const result = await pool.query(statement, [limit, offset]);
+const getAll = async (keyword, limit, page) => {
+    let statement, params;
+    if (keyword) {
+        statement = "SELECT * FROM stations WHERE name ILIKE '%' || $1 || '%' ORDER BY id DESC LIMIT $2 OFFSET $3";
+        params = [keyword, limit, page];
+    } else {
+        statement = 'SELECT * FROM stations ORDER BY id DESC LIMIT $1 OFFSET $2';
+        params = [limit, page];
+    }
+    const result = await pool.query(statement, params);
     return result.rows;
+}
+
+const getCount = async (keyword) => {
+    let statement, params = [];
+    if (keyword) {
+        statement = "SELECT COUNT(*)::int FROM stations WHERE name ILIKE '%' || $1 || '%'";
+        params = [keyword];
+    } else {
+        statement = 'SELECT COUNT(*)::int FROM stations';
+    }
+    const result = await pool.query(statement, params);
+    return result.rows[0].count;
 }
 
 const getById = async (id) => {
@@ -99,6 +118,7 @@ const getTopFiveArrivalsToStation = async (id, date) => {
 
 module.exports = {
     getAll,
+    getCount,
     getById,
     getTopFiveDeparturesFromStation,
     getTopFiveArrivalsToStation,

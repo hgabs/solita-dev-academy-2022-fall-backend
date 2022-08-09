@@ -1,12 +1,12 @@
 const express = require('express');
 const stationRouter = express.Router();
 const stationService = require('../services/stations.js');
+const paginate = require('../middlewares/paginate');
 
 
-stationRouter.get('/stations', async (req, res, next) => {
+stationRouter.get('/stations', paginate('station'), async (req, res, next) => {
     try {
-        const stations = await stationService.getAll();
-        return res.status(200).send(stations);
+        return res.status(200).json(req.paginatedResults);
     } catch (error) {
         console.log(error);
         return res.status(500).end();
