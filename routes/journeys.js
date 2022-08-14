@@ -6,7 +6,6 @@ const paginate = require('../middlewares/paginate');
 
 journeyRouter.get('/journeys', paginate('journey'), async (req, res, next) => {
     try {
-        const { keyword = '', limit = 5, page = 1 } = req.query;
         return res.status(200).json(req.paginatedResults);
     } catch (error) {
         console.log(error);
