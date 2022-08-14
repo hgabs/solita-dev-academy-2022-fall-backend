@@ -14,10 +14,9 @@ const pagination = (model) => {
 
     return async (req, res, next) => {
         try {
-            const { keyword = '', page = 1, limit = 5 } = req.query;
-
-            const count = await service.getCount(keyword);
-            if (page <= 0 || (page - 1) * limit > count) res.status(400).end();
+            const { page = 1, limit = 10 } = req.query;
+            const count = await service.getCount({ ...req.query, page, limit });
+            if (page <= 0 || (page - 1) * limit > count) return res.status(400).end();
 
             const paginatedResults = {};
 
@@ -31,7 +30,7 @@ const pagination = (model) => {
                 paginatedResults.previous = previous;
             }
 
-            const results = await service.getAll(keyword, limit, (page - 1) * limit);
+            const results = await service.getAll({ ...req.query, page, limit });
             paginatedResults.results = results;
             paginatedResults.count = count;
             paginatedResults.last = Math.ceil(count / limit);

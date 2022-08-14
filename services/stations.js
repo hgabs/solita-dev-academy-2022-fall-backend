@@ -1,23 +1,25 @@
 const pool = require('../db');
 
 
-const getAll = async (keyword, limit, page) => {
+const getAll = async (reqQueryParams) => {
+    const { limit, page, keyword = null } = reqQueryParams;
     let statement, params;
     if (keyword) {
-        statement = "SELECT * FROM stations WHERE name ILIKE '%' || $1 || '%' ORDER BY id DESC LIMIT $2 OFFSET $3";
-        params = [keyword, limit, page];
+        statement = "SELECT * FROM stations WHERE name ILIKE $1 || '%' ORDER BY id DESC LIMIT $2 OFFSET $3";
+        params = [keyword, limit, (page-1)*limit];
     } else {
         statement = 'SELECT * FROM stations ORDER BY id DESC LIMIT $1 OFFSET $2';
-        params = [limit, page];
+        params = [limit, (page-1)*limit];
     }
     const result = await pool.query(statement, params);
     return result.rows;
 }
 
-const getCount = async (keyword) => {
+const getCount = async (reqQueryParams) => {
+    const { keyword } = reqQueryParams;
     let statement, params = [];
     if (keyword) {
-        statement = "SELECT COUNT(*)::int FROM stations WHERE name ILIKE '%' || $1 || '%'";
+        statement = "SELECT COUNT(*)::int FROM stations WHERE name ILIKE $1 || '%'";
         params = [keyword];
     } else {
         statement = 'SELECT COUNT(*)::int FROM stations';
