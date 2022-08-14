@@ -2,6 +2,7 @@ const express = require('express');
 const stationRouter = express.Router();
 const stationService = require('../services/stations.js');
 const paginate = require('../middlewares/paginate');
+const { getStationCoordinates, getStationAddress } = require('../utils');
 
 
 stationRouter.get('/stations', paginate('station'), async (req, res, next) => {
@@ -16,7 +17,12 @@ stationRouter.get('/stations', paginate('station'), async (req, res, next) => {
 stationRouter.get('/stations/:id', async (req, res, next) => {
     try {
         const station = await stationService.getById(req.params.id);
-        if (station) return res.status(200).json(station);
+        if (station) {
+            let coordinates, address;
+            coordinates = await getStationCoordinates(req.params.id);
+            if (coordinates) address = await getStationAddress(coordinates);
+            return res.status(200).json({...station, address, coordinates });
+        }
         return res.status(404).end();
     } catch (error) {
         console.log(error);
