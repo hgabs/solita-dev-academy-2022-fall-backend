@@ -32,17 +32,20 @@ const getReverseGeocoding = (lat, lon) =>
   `point.lat=${lat}&point.lon=${lon}&size=1&layers=address`;
 
 const getStationAddress = async ({ lat, lon }) => {
+  const address = { street: null, postalcode: null, city: null };
+
   try {
     const url = getReverseGeocoding(lat, lon);
     const result = await axios.get(url);
-    const { name, postalcode, locality: city } = result.data.features[0].properties;
-    return {
-      street: name,
+    address = {
+      name: street,
       postalcode,
-      city
-    };
+      locality: city
+    } = result.data.features[0].properties;
   } catch (error) {
-
+    console.log(error.message);
+  } finally {
+    return address;
   }
 };
 
