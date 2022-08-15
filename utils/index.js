@@ -3,6 +3,8 @@ const { DIGITRANSIT_HSL_API } = require('../config');
 
 
 const getStationCoordinates = async (id) => {
+  let lat = null, lon = null;
+
   try {
     const query = `{ bikeRentalStation(id: "${id}") { name networks lat lon } }`;
     const apiUrl = DIGITRANSIT_HSL_API;
@@ -15,10 +17,13 @@ const getStationCoordinates = async (id) => {
       }
     };
     const result = await axios(options);
-    const bikeRentalStation = result?.data?.data?.bikeRentalStation;
-    return { lat, lon } = bikeRentalStation || { lat: null, lon: null };
+    const bikeRentalStation = result.data.data.bikeRentalStation;
+    lat = bikeRentalStation.lat;
+    lon = bikeRentalStation.lon;
   } catch (error) {
-    console.log(error)
+    console.log(error.message)
+  } finally {
+    return { lat, lon };
   }
 };
 
