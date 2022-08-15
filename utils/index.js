@@ -28,7 +28,8 @@ const getStationCoordinates = async (id) => {
 };
 
 const getReverseGeocoding = (lat, lon) =>
-  `https://api.digitransit.fi/geocoding/v1/reverse?point.lat=${lat}&point.lon=${lon}&size=1&layers=address`;
+  'https://api.digitransit.fi/geocoding/v1/reverse?' +
+  `point.lat=${lat}&point.lon=${lon}&size=1&layers=address`;
 
 const getStationAddress = async ({ lat, lon }) => {
   try {
