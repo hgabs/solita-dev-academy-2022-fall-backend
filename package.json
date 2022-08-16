@@ -4,7 +4,7 @@
   "description": "Backend for Solita's Dev Academy 2022 Fall Exercise",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "TZ=utc node index.js",
     "dev": "npx nodemon index.js",
     "csv:import": "node utils/csv.js"
   },
