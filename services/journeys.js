@@ -110,9 +110,11 @@ const base = (countQuery = false) => async (reqParams) => {
           break;
         case 'distance':
           filterCorrected = 'j.distance';
+          patternValue = '(%s*1000)';
           break;
         case 'duration':
           filterCorrected = 'j.duration';
+          patternValue = '(%s*60)';
       }
 
       const startOrContinue = id ? 'AND' : 'WHERE';
